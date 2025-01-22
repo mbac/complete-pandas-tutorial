@@ -1,3 +1,11 @@
+---
+title: "Quarto Basics"
+format:
+  html:
+    code-fold: show
+jupyter: python3
+---
+
 
 ```{python}
 import pandas as pd
@@ -7,7 +15,129 @@ import pandas as pd
 
 ```{python}
 
-df = pd.read_csv('warmup-data/coffee.csv')
-df.head()
+coffee = pd.read_csv('warmup-data/coffee.csv')
+coffee.head()
 ```
 
+# Accessing specific data
+
+Use `.loc[]` and `.iloc[]` to access specific data in a DataFrame.
+
+With `.loc[]` you can filter by column names and indices. Not that indices here are inclusive at both start and end of the range:
+
+```{python}
+coffee.loc[3:8]
+```
+
+Then access columns by name (header). Note syntax for 'all rows':
+
+```{python}
+coffee.loc[:, ['Coffee Type', 'Units Sold']]
+
+``` 
+
+`iloc[]` is similar but uses integer indices. Note that the end index is exclusive:
+
+```{python}
+coffee.iloc[3:9, 0:2] # Rows nr. 3 through 8, columns 0 and 1 
+```
+
+# Setting indices
+
+You can use `.index` and `.set_index()` to set indices. The first one simply replaces the index, leaving the selected column as-is. Also, works in-place. The second one sets the index to the selected column, and removes the column from the DataFrame; can be _not_ in-place.
+
+End result is having the selected column used as index for the table (more can be added):
+
+```{python}
+coffee.set_index('Day', inplace=True)
+coffee
+```
+
+When you do this, using integer indices makes little sense:
+
+```{python}
+coffee.iloc[4:6]
+```
+
+However, you can access rows by index labels (i.e., data)—crosstables galore: 
+
+```{python}
+coffee.loc['Monday']
+```
+
+And if we sorted when creating index (`sort=True`—thats not the default), we can use slicing:
+
+```{python}
+coffee.loc['Monday':'Wednesday']
+```
+
+This can be used to more easily access and modify individual data elements:
+
+```{python}
+# coffee.loc['Monday', coffee['Coffee Type'] == 'Espresso'] = 10
+coffee
+```
+
+If you need to (re)sort the index or go back to the way things were:
+```{python}
+coffee.reset_index(inplace=True)
+coffee
+
+```
+
+## Sorting
+
+You can sort:
+
+```{python}
+coffee.sort_values(['Units Sold', 'Day'], ascending=[0,1]) # 0 is False, 1 is True
+```
+
+# Iterations
+
+## Loops -- inefficient
+This kills memory optimizations you would otherwise take advantage of:
+```{python}
+for index, row in coffee.iterrows():
+    print(index, row['Coffee Type'])
+```
+
+# Filtering
+
+```{python}
+bios = pd.read_csv('data/bios.csv')
+bios.head()
+```
+
+# Deleting objects:
+
+```{python}
+
+import pandas as pd
+import numpy as np
+
+# Create a 3x3 DataFrame with random integers
+df = pd.DataFrame(np.random.randint(0, 100, size=(3, 3)))
+df.columns = ['column_name', 'column_name2', 'column_name3']
+
+df2 = df
+
+# Using drop()
+df = df.drop(columns=['column_name'])
+df = df.drop([0, 1], axis=0)  # Remove rows 0 and 1
+
+# Using del
+del df2['column_name']  # Remove column
+del df2  # Delete entire DataFrame
+```
+
+**Best Practices:**
+
+- Use `DataFrame.drop()` when:
+  - You need to preserve the original data
+  - You want to remove multiple items at once
+  - You need to handle errors gracefully
+- Use `del()` when:
+  - You want to immediately free memory
+  - You're certain about removing the object
+  - You don't need the original reference6
