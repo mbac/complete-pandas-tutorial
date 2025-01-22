@@ -1,0 +1,13 @@
+
+```{python}
+import pandas as pd
+```
+
+# Load data
+
+```{python}
+
+df = pd.read_csv('warmup-data/coffee.csv')
+df.head()
+```
+
