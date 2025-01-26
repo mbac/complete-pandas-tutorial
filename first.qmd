@@ -131,6 +131,72 @@ del df2['column_name']  # Remove column
 del df2  # Delete entire DataFrame
 ```
 
+**Filtering**
+
+Based on `.loc[]`:
+
+```{python}
+bios.loc[bios['height_cm'] > 215, ["name", 'height_cm', ]]
+```
+
+Shorthand syntax:
+
+```{python}
+bios[bios['height_cm'] > 215][["name", 'height_cm']]
+```
+
+Multiple conditions/filters require parentheses for each condition:
+
+```{python}
+bios[(bios['height_cm'] > 215) & (bios['born_country'] == 'USA')]
+```
+
+***String matching***
+`.str.contains()` works with regexp syntax by default. The `na` arg specifies what value should empty cells be treated as: when `False`, function returns `False` on NAs.
+
+```{python}
+bios[bios['name'].str.contains('Keith|Patrick')]
+```
+
+`.isin()` matches data against a provided list:
+
+```{python}
+bios[bios['born_country'].isin(['USA', 'ITA', 'GBR'])]
+```
+
+Use `.query()` to filter data with a commonsense syntax. Note the outer single quotes around the query and the double quotes around the compare string:
+
+```{python}
+bios.query('born_country == "USA"')
+```
+
+**Add/Remove Columns**
+
+`Numpy.where()` is a vectorized version of `if/else` statements. It takes three arguments: a condition, a value to return if the condition is `True`, and a value to return if the condition is `False`.
+
+```{python}
+coffee['price'] = 4.99
+coffee['new_price'] = np.where(coffee['Coffee Type'] == 'Espresso', 3.99, 5.99)
+coffee
+```
+
+
+***Dropping Data***
+
+`DatFrame.drop()` is the preferred method for removing columns. It returns a new DataFrame with the specified columns removed. The original DataFrame remains unchanged. The `inplace` argument can be set to `True` to modify the original DataFrame. The `axis` argument can be set to `0` to remove rows or `1` to remove columns. The `errors` argument can be set to `ignore` to suppress errors if the specified columns do not exist. The `level` argument can be set to `None` to remove columns by name or `0` to remove columns by index.
+
+So, drop the 0th index along axis 0 (rows):
+
+```{python}
+coffee.drop(0)
+```
+
+Column names need to be specified as such:
+
+```{python}
+coffee.drop(columns=['price'])
+```
+
 **Best Practices:**
 
 - Use `DataFrame.drop()` when:
