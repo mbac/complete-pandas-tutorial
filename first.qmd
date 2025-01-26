@@ -6,12 +6,11 @@ format:
 jupyter: python3
 ---
 
-
 ```{python}
 import pandas as pd
 ```
 
-# Load data
+## Load data
 
 ```{python}
 
@@ -19,11 +18,12 @@ coffee = pd.read_csv('warmup-data/coffee.csv')
 coffee.head()
 ```
 
-# Accessing specific data
+## Accessing specific data
 
 Use `.loc[]` and `.iloc[]` to access specific data in a DataFrame.
 
-With `.loc[]` you can filter by column names and indices. Not that indices here are inclusive at both start and end of the range:
+With `.loc[]` you can filter by column names and indices. Not that
+indices here are inclusive at both start and end of the range:
 
 ```{python}
 coffee.loc[3:8]
@@ -34,19 +34,24 @@ Then access columns by name (header). Note syntax for 'all rows':
 ```{python}
 coffee.loc[:, ['Coffee Type', 'Units Sold']]
 
-``` 
+```
 
-`iloc[]` is similar but uses integer indices. Note that the end index is exclusive:
+`iloc[]` is similar but uses integer indices. Note that the end index is
+exclusive:
 
 ```{python}
 coffee.iloc[3:9, 0:2] # Rows nr. 3 through 8, columns 0 and 1 
 ```
 
-# Setting indices
+## Setting indices
 
-You can use `.index` and `.set_index()` to set indices. The first one simply replaces the index, leaving the selected column as-is. Also, works in-place. The second one sets the index to the selected column, and removes the column from the DataFrame; can be _not_ in-place.
+You can use `.index` and `.set_index()` to set indices. The first one
+simply replaces the index, leaving the selected column as-is. Also,
+works in-place. The second one sets the index to the selected column,
+and removes the column from the DataFrame; can be *not* in-place.
 
-End result is having the selected column used as index for the table (more can be added):
+End result is having the selected column used as index for the table
+(more can be added):
 
 ```{python}
 coffee.set_index('Day', inplace=True)
@@ -59,19 +64,22 @@ When you do this, using integer indices makes little sense:
 coffee.iloc[4:6]
 ```
 
-However, you can access rows by index labels (i.e., data)—crosstables galore: 
+However, you can access rows by index labels (i.e., data)—crosstables
+galore:
 
 ```{python}
 coffee.loc['Monday']
 ```
 
-And if we sorted when creating index (`sort=True`—thats not the default), we can use slicing:
+And if we sorted when creating index (`sort=True`—thats not the
+default), we can use slicing:
 
 ```{python}
 coffee.loc['Monday':'Wednesday']
 ```
 
-This can be used to more easily access and modify individual data elements:
+This can be used to more easily access and modify individual data
+elements:
 
 ```{python}
 # coffee.loc['Monday', coffee['Coffee Type'] == 'Espresso'] = 10
@@ -79,6 +87,7 @@ coffee
 ```
 
 If you need to (re)sort the index or go back to the way things were:
+
 ```{python}
 coffee.reset_index(inplace=True)
 coffee
@@ -93,28 +102,27 @@ You can sort:
 coffee.sort_values(['Units Sold', 'Day'], ascending=[0,1]) # 0 is False, 1 is True
 ```
 
-# Iterations
+## Iterations
 
-## Loops -- inefficient
+### Loops -- inefficient
+
 This kills memory optimizations you would otherwise take advantage of:
+
 ```{python}
 for index, row in coffee.iterrows():
     print(index, row['Coffee Type'])
 ```
 
-# Filtering
 
-```{python}
-bios = pd.read_csv('data/bios.csv')
-bios.head()
-```
-
-# Deleting objects:
+## Deleting objects:
 
 ```{python}
 
 import pandas as pd
 import numpy as np
+
+bios = pd.read_csv('data/bios.csv')
+bios.head()
 
 # Create a 3x3 DataFrame with random integers
 df = pd.DataFrame(np.random.randint(0, 100, size=(3, 3)))
@@ -151,8 +159,11 @@ Multiple conditions/filters require parentheses for each condition:
 bios[(bios['height_cm'] > 215) & (bios['born_country'] == 'USA')]
 ```
 
-***String matching***
-`.str.contains()` works with regexp syntax by default. The `na` arg specifies what value should empty cells be treated as: when `False`, function returns `False` on NAs.
+### String matching
+
+`.str.contains()` works with regexp syntax by
+default. The `na` arg specifies what value should empty cells be treated
+as: when `False`, function returns `False` on NAs.
 
 ```{python}
 bios[bios['name'].str.contains('Keith|Patrick')]
@@ -164,15 +175,19 @@ bios[bios['name'].str.contains('Keith|Patrick')]
 bios[bios['born_country'].isin(['USA', 'ITA', 'GBR'])]
 ```
 
-Use `.query()` to filter data with a commonsense syntax. Note the outer single quotes around the query and the double quotes around the compare string:
+Use `.query()` to filter data with a commonsense syntax. Note the outer
+single quotes around the query and the double quotes around the compare
+string:
 
 ```{python}
 bios.query('born_country == "USA"')
 ```
 
-**Add/Remove Columns**
+## Add/Remove Columns ##
 
-`Numpy.where()` is a vectorized version of `if/else` statements. It takes three arguments: a condition, a value to return if the condition is `True`, and a value to return if the condition is `False`.
+`Numpy.where()` is a vectorized version of `if/else` statements. It
+takes three arguments: a condition, a value to return if the condition
+is `True`, and a value to return if the condition is `False`.
 
 ```{python}
 coffee['price'] = 4.99
@@ -180,10 +195,16 @@ coffee['new_price'] = np.where(coffee['Coffee Type'] == 'Espresso', 3.99, 5.99)
 coffee
 ```
 
+## Dropping Data ##
 
-***Dropping Data***
-
-`DatFrame.drop()` is the preferred method for removing columns. It returns a new DataFrame with the specified columns removed. The original DataFrame remains unchanged. The `inplace` argument can be set to `True` to modify the original DataFrame. The `axis` argument can be set to `0` to remove rows or `1` to remove columns. The `errors` argument can be set to `ignore` to suppress errors if the specified columns do not exist. The `level` argument can be set to `None` to remove columns by name or `0` to remove columns by index.
+`DatFrame.drop()` is the preferred method for removing columns. It
+returns a new DataFrame with the specified columns removed. The original
+DataFrame remains unchanged. The `inplace` argument can be set to `True`
+to modify the original DataFrame. The `axis` argument can be set to `0`
+to remove rows or `1` to remove columns. The `errors` argument can be
+set to `ignore` to suppress errors if the specified columns do not
+exist. The `level` argument can be set to `None` to remove columns by
+name or `0` to remove columns by index.
 
 So, drop the 0th index along axis 0 (rows):
 
@@ -194,16 +215,222 @@ coffee.drop(0)
 Column names need to be specified as such:
 
 ```{python}
-coffee.drop(columns=['price'])
+
+# Save this for later
+koffee = coffee.drop(columns=['price'])
+
+koffee
+```
+
+Drop works on copies by default:
+
+```{python}
+coffee.drop(columns=['price'], inplace=True)
+```
+
+**Word of Caution** Copies in pandas are actually links by default:
+
+```{python}
+coffee = pd.read_csv('./warmup-data/coffee.csv')
+coffee_new = coffee
+
+coffee_new['price'] = 4.99
+
+coffee.head() # Price shouldn't be here
+
+```
+
+You need to explicitly copy data:
+
+```{python}
+coffee = pd.read_csv('./warmup-data/coffee.csv')
+coffee_new = coffee.copy()
+coffee_new['price'] = 4.99
+coffee.head() 
+```
+
+## Generating New Data Columns ##
+
+```{python}
+koffee['revenue'] = koffee['Units Sold'] * koffee['new_price']
+koffee
+```
+
+You can rename columns using the `rename()` method, which takes a
+dictionary:
+
+```{python}
+koffee.rename(columns={'new_price': 'price'}, inplace=True)
+```
+
+```{python}
+
+bios_new = bios.copy()
+
+bios_new['first_name'] = bios_new['name'].str.split(' ').str[0]
+bios_new
+```
+
+Optimizing then splitting date strings:
+
+```{python}
+
+bios_new['born_datetime'] = pd.to_datetime(bios_new['born_date'])
+
+bios_new['born_year'] = bios_new['born_datetime'].dt.year
+bios_new
+```
+
+Operations more complex than a comparison can be done using `apply()`
+and a lambda:
+
+```{python}
+
+bios_new['height_category'] = bios_new['height_cm'].apply(lambda x: 'Short' if x < 165 else 'Average' if x < 185 else 'Tall')
+bios_new
+```
+
+Even more complex:
+
+```{python}
+
+def categorize_athlete(row):
+  if row['height_cm'] < 175 and row['weight_kg'] < 70:
+    return 'Lightweight'
+  else:
+    return 'Tall and Heavy'
+
+bios_new['Category'] = bios_new.apply(categorize_athlete, axis=1)
+bios_new
+```
+
+## Merging & Concatenating ##
+
+```{python}
+
+bios = pd.read_csv('./data/bios.csv')
+nocs = pd.read_csv('./data/noc_regions.csv')
+
+nocs.head()
+
+```
+
+Combine/join 2 dataframes using `merge()`. The `how` parameter specifies
+the type of join, whereas the `on` parameter specifies the column to
+join on. When col names are different you can use `left_on` and
+`right_on`. The `suffixes` parameter allows you to specify suffixes for
+overlapping column names. Remember join types:
+
+![](./images/joins-venn.webp){width="75%" height="75%"}
+
+```{python}
+bios_new = pd.merge(bios, nocs, how='left', left_on='born_country', right_on='NOC', suffixes=('_bios', '_nocs'))
+
+bios_new.rename(columns={'region': 'born_country_full'}, inplace=True)
+
+bios_new.head()
+```
+
+**Note**: the results of the following example make no sense because the "born region" could be totally unrelated to the country an athlete competed for; not only because they could be born in the UK then compete for France, but also because places changed name over time or were banned from competing (Taiwan, North Korea?, Russia after Ukraine war).
+
+```{python}
+bios_new[bios_new['NOC_bios'] != bios_new['born_country_full']]
+```
+
+## Concatenating ##
+
+Concatenating is the process of combining two or more DataFrames along a particular axis (rows or columns).
+
+```{python}
+bios_new[bios_new['born_country_full'] == 'United States']
+```
+
+```{python}
+
+usa = bios_new[bios_new['born_country_full'] == 'USA']
+gbr = bios_new[bios_new['born_country_full'] == 'UK']
+
+# Axis 0, on top of each other, is the default
+# Unclear why you would use axis=1 (side by side) instead of merge
+new_df = pd.concat([usa, gbr], axis=0)
+new_df.head()
+```
+
+
+## Handling Null/Missing Data ##
+
+Pandas uses `np.nan` to represent missing data. You can check for missing values using `isnull()` or `notnull()`.
+
+```{python}
+
+koffee.loc[[2,3], 'Units Sold']  = np.nan
+
+koffee.info()
+
+```
+
+Easy syntax to assemble all NaNs:
+
+```{python}
+
+koffee.isna().sum()
+
+```
+
+Filling in missing values with the mean value:
+
+```{python}
+
+# Note rounding and switch to integer to eliminate decimal zeros
+koffee_filled = koffee.fillna(koffee['Units Sold'].mean())
+
+koffee_filled['Units Sold'] = koffee_filled['Units Sold'].round(0).apply(np.int64)
+
+koffee_filled
+```
+
+Interpolating data (I think it's linear interpol) is not compatible with `.fillna()` so you have to do it separately:
+
+```{python}
+
+koffee['Units Sold'].interpolate()
+
+```
+
+Dropping rows has a non-standard argument to specify columns:
+
+```{python}
+
+koffee.dropna(subset=['Units Sold'], inplace=False)
+
+```
+
+## Data Aggregation ##
+
+Count occurrence of individual values:
+
+```{python}
+bios['born_city'].value_counts()
+
+bios.value_counts('born_city')
+
+```
+
+```{python}
+
+koffee['Units Sold'] = koffee['Units Sold'].interpolate().round(0).apply(np.int64)
+
+koffee
+
 ```
 
 **Best Practices:**
 
-- Use `DataFrame.drop()` when:
-  - You need to preserve the original data
-  - You want to remove multiple items at once
-  - You need to handle errors gracefully
-- Use `del()` when:
-  - You want to immediately free memory
-  - You're certain about removing the object
-  - You don't need the original reference6
+-   Use `DataFrame.drop()` when:
+    -   You need to preserve the original data
+    -   You want to remove multiple items at once
+    -   You need to handle errors gracefully
+-   Use `del()` when:
+    -   You want to immediately free memory
+    -   You're certain about removing the object
+    -   You don't need the original reference6
